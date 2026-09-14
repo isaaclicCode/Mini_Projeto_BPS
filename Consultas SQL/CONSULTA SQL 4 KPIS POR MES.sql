@@ -1,0 +1,1 @@
+SELECT `ano_mes`, `ano_compra`, `mes_compra`, `valor_total_registrado`, `quantidade_total_itens`, `num_itens_registrados`, `num_processos_compra`, `preco_unitario_ponderado` FROM `mini-projeto-bps-2020-a-2026.mini_projeto_bps_saude.vw_kpis_por_mes` LIMIT 1000

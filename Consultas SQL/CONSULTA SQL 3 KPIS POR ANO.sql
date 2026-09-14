@@ -1,0 +1,1 @@
+SELECT  FROM `mini-projeto-bps-2020-a-2026.mini_projeto_bps_saude.vw_kpis_por_ano` LIMIT 1000

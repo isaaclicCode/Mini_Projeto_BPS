@@ -1,0 +1,1 @@
+SELECT `chave_produto`, `ano_compra`, `n_compras`, `n_fornecedores`, `preco_min`, `preco_max`, `preco_medio`, `preco_mediano`, `coef_variacao`, `amplitude_pct` FROM `mini-projeto-bps-2020-a-2026.mini_projeto_bps_saude.vw_benchmark_precos` LIMIT 1000

@@ -1,0 +1,1 @@
+SELECT `cnpj_fornecedor`, `fornecedor`, `num_processos`, `num_instituicoes_atendidas`, `num_produtos_distintos`, `valor_total`, `qtd_total_itens` FROM `mini-projeto-bps-2020-a-2026.mini_projeto_bps_saude.vw_ranking_fornecedores` LIMIT 1000
