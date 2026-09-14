@@ -696,6 +696,9 @@ de dados históricos como instrumento de apoio à tomada de decisão e à busca 
 ---
 
 **📅 Data de Entrega:** 14/09/2026 às 22:00 hrs
-**🐙 Repositório:** [link do GitHub]
+
+**🐙 Repositório:** [https://github.com/isaaclicCode/Mini_Projeto_BPS].
+
 ** BigQuery (consultas SQL e historico de jobs): [https://console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1smini-projeto-bps-2020-a-2026!2smini_projeto_bps_saude]
+
 **📊 Dashboard Visuais:** [https://datastudio.google.com/s/om1LVw3-Zz0]
