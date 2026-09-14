@@ -285,25 +285,28 @@ A análise foi orientada pelas seguintes perguntas de negócio:
 
 ---
 
-## ✅ Evitar a soma de preços unitários quando essa operação não representar uma informação válida
+📊 Indicadores financeiros e preço unitário
+❌ Por que não utilizar a soma dos preços unitários?
 
-### ❌ Comprovação do erro
+O preço unitário representa o valor de uma unidade do produto em cada registro. Como os registros possuem quantidades adquiridas diferentes, a soma dos preços unitários não representa uma medida econômica válida para o conjunto da base.
 
-| Métrica | Valor | Veredito |
-|---------|-------|----------|
-| `SUM(preco_unitario)` | **R$ 58.464.853,19** | ❌ Sem significado |
-| `AVG(preco_unitario)` | R$ 170,93 | ✅ Média simples |
-| `MEDIAN(preco_unitario)` | R$ 1,85 | ✅ Robusta a outliers |
-| Preço ponderado (`SUM(preco_total) / SUM(qtd)`) | R$ 1,37 | ✅ Preço real pago |
-| `SUM(preco_total)` | **R$ 78.482.430.587,26** | 💰 Gasto real |
+Por exemplo, uma compra de um produto por R$ 0,02 com 1.000 unidades e outra compra por R$ 900,00 com apenas 1 unidade não podem ser interpretadas simplesmente pela soma de seus preços unitários. O volume adquirido precisa ser considerado na análise.
 
-### 💡 Interpretação
+Por isso, para representar o preço médio efetivamente associado ao volume comprado, foi utilizado o preço unitário médio ponderado.
 
-Somar preços unitários gera **R$ 58 milhões** — um número sem qualquer significado, porque cada linha tem uma quantidade diferente. Um item de R$ 0,02 (×1000 unidades) e outro de R$ 900 (×1 unidade) somariam R$ 900,02 — absurdo.
+📊 Preço Unitário Médio Ponderado
 
-**O preço correto para análise é o ponderado (R$ 1,37)**, que representa o valor real pago por unidade, considerando o volume de cada compra.
+No resultado final apresentado no dashboard, o Preço Unitário Médio Ponderado foi de R$ 0,86.
 
-**Regra fixada:** para preços unitários, usar sempre `AVG`, `MEDIAN` ou `SAFE_DIVIDE(SUM(preco_total), SUM(qtd_itens_comprados))`. **Nunca `SUM`.**
+Esse indicador considera o peso das quantidades adquiridas e, portanto, é mais adequado para representar o preço médio por unidade dentro do conjunto analisado.
+
+💡 Interpretação
+
+A diferença entre o preço médio ponderado e uma média simples ocorre porque os registros possuem volumes de compra muito diferentes.
+
+Uma compra de alto valor unitário realizada em pequena quantidade possui peso muito menor no preço ponderado do que milhões de unidades adquiridas a preços baixos.
+
+Regra adotada na análise: indicadores de preço devem considerar a natureza da variável e o volume adquirido. Para uma visão agregada do preço por unidade, utiliza-se o preço unitário médio ponderado, enquanto medidas como média simples ou mediana podem ser utilizadas como estatísticas complementares.
 
 ---
 
@@ -451,126 +454,146 @@ Preço Médio Genéric
 
 **Interpretar os principais indicadores:**
 
-### 📊 1.1 — Valor Total Registrado: R$ 48,88 bilhões
+📊 1.1 — Valor Total Registrado: R$ 48,88 bilhões
 
-O setor público de saúde brasileiro registrou **R$ 48,88 bilhões** em compras no período de 2020 a 2026 (parcial).
-Esse valor representa o total efetivamente pago, distribuído entre 24 Unidades Federativas.
+O conjunto de dados analisado registra R$ 48,88 bilhões em compras no período de 2020 a 2026 (com 2026 parcial). O dashboard apresenta esse valor como Valor Total Registrado.
 
-**Interpretação:** O montante é expressivo e compatível com o porte do SUS, mas está **abaixo do valor real** de gasto público em saúde,
-pois nem todos os entes federativos reportam suas compras ao sistema federal. A ausência de estados como Amazonas, Amapá e Distrito Federal
-no dataset reforça essa limitação.
+O valor deve ser interpretado considerando a cobertura do Banco de Preços em Saúde. A base não representa necessariamente todo o gasto público brasileiro em saúde, uma vez que existem diferenças de participação e disponibilidade de dados entre as Unidades Federativas.
 
-### 📊 1.2 — Quantidade Total de Itens: 57,1 bilhões de unidades
+No conjunto analisado, existem registros para 24 UFs, enquanto Amazonas (AM), Amapá (AP) e Distrito Federal (DF) aparecem sem dados no painel.
 
-Foram adquiridas **57,1 bilhões de unidades** (comprimidos, frascos, ampolas, luvas, seringas etc.) ao longo do período.
+📊 1.2 — Quantidade Total de Itens: 57,1 bilhões de unidades
 
-**Interpretação:** A razão entre valor total e quantidade (**R$ 0,86 por unidade**) revela que **a maior parte das unidades compradas é
-de itens de baixo custo** — como medicamentos básicos, materiais de consumo e insumos hospitalares. Poucas compras de alto valor concentram
-a maior parte do orçamento.
+Foram registradas 57,1 bilhões de unidades no período analisado.
 
-### 📊 1.3 — Nº de Itens Registrados: 342.039
+Essa quantidade inclui diferentes tipos de produtos e unidades de fornecimento, como medicamentos, materiais hospitalares e outros itens registrados no BPS.
 
-A base final possui **342.039 registros** de itens individuais (cada linha = 1 produto comprado).
+A relação entre o valor financeiro total e a quantidade total de unidades resulta em aproximadamente R$ 0,86 por unidade, indicador apresentado no dashboard como Preço Unitário Médio Ponderado.
 
-**Interpretação:** A base original tinha 342.047 registros. Foram removidos **8 outliers** identificados como erros de digitação 
-(ex.: Penicilamina a R$ 294.400/cápsula). Após a limpeza, **342.039 registros** foram considerados válidos.
+Interpretação: a grande quantidade de unidades está associada principalmente à aquisição de produtos de menor preço unitário, enquanto produtos de maior valor podem representar parcela significativa do gasto mesmo quando adquiridos em quantidades menores.
 
-### 📊 1.4 — Nº de Processos de Compra: 12.992
+📊 1.3 — Nº de Itens Registrados: 342.039
 
-Foram executados **12.992 processos de compra únicos** (identificados por `codigo_br`).
+A base final utilizada no dashboard possui 342.039 registros de itens.
 
-**Interpretação:** A razão **26,3 itens por processo** indica compras **relativamente consolidadas** — cada processo adquire, em média, 
-26 produtos diferentes. Processos muito fragmentados (1 item por processo) seriam ineficientes; 26 itens sugere boa consolidação.
+A base original possuía 342.047 registros, dos quais 8 outliers foram removidos durante o tratamento dos dados.
 
-### 📊 1.5 — Instituições Compradoras: 831
+Esses registros foram identificados como valores atípicos associados a possíveis erros de preenchimento ou digitação, evitando que distorcessem os indicadores de preço e gasto.
 
-**831 instituições públicas distintas** (municipais, estaduais e federais) realizaram compras no período.
+Assim, 342.039 registros permaneceram na base final utilizada para as análises.
 
-**Interpretação:** Distribuídas por **24 UFs**, isso dá uma média de ~35 instituições por estado. A concentração é alta: 
-**SP e PR concentram 33% das instituições**, refletindo a maior infraestrutura de saúde nessas regiões.
+📊 1.4 — Nº de Processos de Compra: 12.992
 
-### 📊 1.6 — Fornecedores: 3.502
+Foram identificados 12.992 processos de compra no conjunto analisado.
 
-Foram registrados **3.502 fornecedores únicos** (por CNPJ) no período.
+Considerando os 342.039 registros de itens, isso representa aproximadamente 26,3 registros de itens por processo de compra.
 
-**Interpretação:** A razão **1 fornecedor para cada 4,2 instituições** mostra que **há razoável competição**, mas com 
-concentração significativa: **os 10 maiores fornecedores respondem por 52% do valor total** (R$ 25,4 bi de R$ 48,88 bi). Isso indica
-**alta concentração de mercado** — especialmente nas compras de medicamentos oncológicos e de alto custo.
+Essa relação indica que os processos registrados podem envolver múltiplos itens, não se limitando a uma única aquisição por processo.
 
-### 📊 1.7 — Preço Unitário Médio Ponderado: R$ 0,86
+📊 1.5 — Instituições Compradoras: 831
 
-O preço médio real pago por unidade comprada foi **R$ 0,86**.
+Foram identificadas 831 instituições compradoras no conjunto analisado.
 
-**Interpretação:** Esse valor é **muito inferior à média simples (R$ 170,93)**, porque **a maioria absoluta das unidades adquiridas são
-itens de baixíssimo custo**. Um único medicamento oncológico de R$ 50.000 pesa o mesmo que 58 mil comprimidos de R$ 0,86 na média simples,
-mas **apenas 1/58.000** no ponderado. **O ponderado é o indicador correto** para refletir o preço real por unidade.
+Essas instituições estão distribuídas entre as 24 Unidades Federativas que apresentam dados no conjunto analisado.
 
-### 2 — Estados, municípios e instituições de maior relevância
+A distribuição das instituições não é uniforme entre os estados. A concentração financeira observada no ranking estadual demonstra que determinadas UFs possuem participação significativamente maior no valor registrado.
 
-A distribuição dos valores registrados apresenta forte concentração entre algumas Unidades Federativas. Entre os estados com dados disponíveis,
-São Paulo (SP) apresenta o maior valor registrado, com **R$ 21,62 bilhões e 62.915 registros de compras**, seguido pelo Paraná (PR), com
-**R$ 6,35 bilhões e 76.216 registros**, e Ceará (CE), com **R$ 5,40 bilhões e 5.060 registros**.
+📊 1.6 — Fornecedores: 3.502
 
-Na sequência aparecem Rio de Janeiro (RJ), com **R$ 2,13 bilhões**, Santa Catarina (SC), com **R$ 1,94 bilhão**, Rio Grande do Sul (RS), com
-**R$ 1,83 bilhão**, Alagoas (AL), com **R$ 1,52 bilhão**, e Espírito Santo (ES), com **R$ 1,36 bilhão**.
-A base possui **831 instituições públicas compradoras**, distribuídas entre 24 Unidades Federativas. Entretanto, o material analisado não apresenta
-informações suficientes para estabelecer um ranking confiável dos municípios e das instituições individualmente.
-A concentração estadual demonstra que São Paulo possui papel de destaque na movimentação financeira registrada na base. Apenas SP representa
-aproximadamente **44% do valor total registrado**.
+Foram identificados 3.502 fornecedores no conjunto analisado.
 
-### 3 — Produtos com maior valor total e quantidade adquirida
+O ranking dos dez maiores fornecedores por valor total apresenta forte presença de empresas dos setores farmacêutico e hospitalar. Entre eles estão:
 
-A análise da base demonstra uma característica importante: **valor financeiro e quantidade adquirida não necessariamente estão relacionados**.
-Foram registradas **57,1 bilhões de unidades**, enquanto o valor total das compras alcançou **R$ 48,88 bilhões**. A grande quantidade de unidades
-é explicada principalmente pela aquisição de produtos de baixo custo, como medicamentos básicos, materiais de consumo e insumos hospitalares.
-Por outro lado, produtos de maior complexidade e maior preço unitário podem representar valores financeiros elevados mesmo quando adquiridos em
-quantidades relativamente menores.
-O material analisado não apresenta um ranking completo dos produtos por **valor total acumulado** e por **quantidade adquirida**. Dessa forma,
-não é possível apontar, com segurança, quais são os produtos líderes nessas duas dimensões sem acessar os dados detalhados da base.
+Onco Prod Distribuidora de Produtos Hospitalares e Oncológicos Ltda.;
+Novartis Biociências S.A.;
+Janssen-Cilag Farmacêutica Ltda.;
+AstraZeneca do Brasil Ltda.;
+Cristália Produtos Químicos Farmacêuticos Ltda.;
+CM Hospitalar S.A.;
+Sulmedic Comércio de Medicamentos Ltda.;
+Elfa Medicamentos S.A.;
+Ativa Comercial Hospitalar Ltda.;
+Sanofi Medley Farmacêutica Ltda.
 
-### 4 - Comparação entre fornecedores e fabricantes
+A análise demonstra concentração relevante do valor financeiro entre os maiores fornecedores. Segundo os resultados consolidados da análise, os 10 maiores fornecedores representam aproximadamente 52% do valor total registrado.
 
-Foram identificados **3.502 fornecedores únicos**, responsáveis pelo fornecimento dos produtos registrados na base.
-O ranking dos 10 maiores fornecedores por valor total apresenta forte presença de empresas do setor farmacêutico e hospitalar. Entre os principais
-fornecedores estão **Onco Prod Distribuidora de Produtos Hospitalares e Oncológicos Ltda., Novartis Biociências S.A., Janssen-Cilag Farmacêutica
-Ltda., AstraZeneca do Brasil Ltda., Cristália Produtos Químicos Farmacêuticos Ltda., CM Hospitalar S.A., Sulmedic Comércio de Medicamentos Ltda.,
-Elfa Medicamentos S.A., Ativa Comercial Hospitalar Ltda. e Sanofi Medley Farmacêutica Ltda.**
+É importante distinguir fornecedor de fabricante. O fornecedor registrado na compra pode atuar como distribuidor ou comercializador de produtos fabricados por outra empresa. Portanto, uma análise por fabricante pode produzir uma concentração diferente daquela observada no ranking de fornecedores.
 
-Os 10 maiores fornecedores concentram aproximadamente **52% do valor total registrado**, indicando uma **elevada concentração do mercado**.
-Essa concentração é especialmente relevante porque parte significativa dos fornecedores de maior valor está relacionada à comercialização de medica
-mentos de alto custo e produtos especializados. Assim, a competição em número de empresas não significa necessariamente uma distribuição equilibrada
-do valor financeiro.
+2 — Estados, municípios e instituições de maior relevância
 
-A comparação entre fornecedores e fabricantes também deve considerar que **fornecedor e fabricante são dimensões diferentes**: uma empresa pode 
-atuar como distribuidora de produtos fabricados por outras empresas. Por isso, uma análise de concentração por fabricante poderia apresentar
-resultados diferentes do ranking por fornecedor.
+A distribuição dos valores registrados apresenta forte concentração entre algumas Unidades Federativas.
 
-### 5 — Evolução anual dos valores registrados
+Entre os estados com dados disponíveis, São Paulo (SP) apresenta o maior valor registrado, com R$ 21,62 bilhões e 62.915 registros de compras. Em seguida aparecem:
 
-A base apresenta a evolução do gasto total entre **2020 e 2025**, permitindo observar a variação dos valores registrados ao longo do período.
-O painel também apresenta a evolução do preço unitário médio ponderado para o mesmo intervalo.
-A análise temporal deve ser interpretada considerando que os dados de **2026 são parciais**. Portanto, o ano de 2026 não deve ser comparado 
-diretamente com anos completos.
-O preço unitário médio ponderado registrado na base é de **R$ 0,86**, indicador que representa melhor o preço efetivamente pago por unidade,
-considerando o peso da quantidade adquirida.
+UF	Valor registrado	Registros
+SP	R$ 21,62 bi	62.915
+PR	R$ 6,35 bi	76.216
+CE	R$ 5,40 bi	5.060
+RJ	R$ 2,13 bi	7.839
+SC	R$ 1,94 bi	11.254
+RS	R$ 1,83 bi	17.802
+AL	R$ 1,52 bi	10.881
+ES	R$ 1,36 bi	9.782
 
-### 6 — Diferenças de preços unitários entre produtos comparáveis
+Esses valores são apresentados diretamente no ranking estadual do dashboard.
 
-A análise de dispersão de preços identificou diferenças relevantes nos preços unitários de determinados produtos, mesmo quando se trata do mesmo
-produto e do mesmo ano.
+São Paulo representa aproximadamente 44% do valor total registrado, evidenciando uma forte concentração financeira nessa UF.
 
-Entre os casos destacados estão:
+O dashboard também registra 831 instituições compradoras e dados provenientes de 24 UFs.
 
-* **Alteplase**, em 2022: preço mínimo de **R$ 2.230,13** e máximo de **R$ 3.273**, com amplitude de **46,8%**;
-* **Omalizumabe**, em 2022: preço mínimo de **R$ 1.504,85** e máximo de **R$ 2.593,41**, com amplitude de **72,3%**;
-* **Tiotrópio brometo**, em 2025: preço mínimo de **R$ 281,30** e máximo de **R$ 364,99**, com amplitude de **29,8%**;
-* **Cefalotina sódica**, em 2025: preço mínimo de **R$ 3,65** e máximo de **R$ 5,15**, com amplitude de **41,1%**;
-* **Cianocobalamina**, em 2021: preço mínimo de **R$ 1,38** e máximo de **R$ 1,87**, com amplitude de **35,5%**.
+Embora a análise permita observar a concentração estadual, o material apresentado no dashboard não fornece elementos suficientes para estabelecer um ranking confiável dos municípios e das instituições individualmente. Portanto, essa conclusão não deve ser apresentada como se tivesse sido demonstrada pelo painel.
 
-Essas diferenças indicam **oportunidades potenciais de economia**, principalmente nos produtos que apresentam maior dispersão de preços.
+3 — Produtos com maior valor total e quantidade adquirida
 
-Entretanto, a diferença de preço não deve ser interpretada automaticamente como sobrepreço. Características como fabricante, apresentação, 
-quantidade adquirida, condições de contratação, região, fornecedor e período da compra podem justificar parte da variação observada.
+A análise da base demonstra que valor financeiro e quantidade adquirida são dimensões diferentes.
+
+Foram registrados 57,1 bilhões de unidades, enquanto o valor total registrado alcançou R$ 48,88 bilhões.
+
+A grande quantidade de unidades está associada principalmente a produtos de menor preço unitário, enquanto produtos de maior complexidade ou maior valor podem gerar elevado impacto financeiro mesmo quando adquiridos em quantidades menores.
+
+O material apresentado no dashboard não apresenta um ranking completo dos produtos por valor total acumulado e por quantidade adquirida.
+
+Por esse motivo, não é adequado afirmar quais produtos são líderes nessas duas dimensões sem consultar diretamente a base detalhada.
+
+4 — Comparação entre fornecedores e fabricantes
+
+Foram identificados 3.502 fornecedores no conjunto analisado.
+
+O ranking dos dez maiores fornecedores por valor total demonstra participação relevante de empresas farmacêuticas e hospitalares, com destaque para Onco Prod, Novartis, Janssen-Cilag, AstraZeneca, Cristália, CM Hospitalar, Sulmedic, Elfa, Ativa e Sanofi Medley.
+
+Os dez maiores fornecedores representam aproximadamente 52% do valor total registrado, indicando concentração relevante do valor financeiro entre os principais participantes.
+
+Essa concentração deve ser interpretada com cautela: o número de fornecedores não significa necessariamente distribuição equilibrada do valor das compras.
+
+Também é importante diferenciar fornecedor e fabricante. Um fornecedor pode atuar como distribuidor ou comercializador de produtos fabricados por outra empresa. Dessa forma, uma análise de concentração por fabricante pode apresentar resultados diferentes do ranking por fornecedor.
+
+5 — Evolução anual dos valores registrados
+
+O dashboard apresenta a Evolução do Gasto Total por Ano para o período de 2020 a 2025.
+
+Também é apresentada a Evolução do Preço Ponderado (2020–2025).
+
+Embora o conjunto geral contenha dados até 2026, o próprio painel indica que a análise temporal apresentada nesses gráficos vai até 2025. Portanto, 2026 deve ser tratado como período parcial e não deve ser comparado diretamente com anos completos.
+
+O preço unitário médio ponderado geral apresentado no painel é de R$ 0,86.
+
+6 — Diferenças de preços unitários entre produtos comparáveis
+
+A análise de dispersão identificou diferenças relevantes nos preços unitários de determinados produtos, considerando produtos comparáveis dentro do mesmo ano.
+
+O dashboard apresenta uma tabela de “Oportunidades de Economia — Produtos com Maior Dispersão de Preço”.
+
+Entre os principais casos:
+
+Alteplase — 2022: mínimo de R$ 2.230,13, máximo de R$ 3.273,00, mediana de R$ 2.472,99 e amplitude de 46,8%;
+Omalizumabe — 2022: mínimo de R$ 1.504,85, máximo de R$ 2.593,41, mediana de R$ 1.905,90 e amplitude de 72,3%;
+Tiotrópio brometo — 2025: mínimo de R$ 281,30, máximo de R$ 364,99, mediana de R$ 292,14 e amplitude de 29,8%;
+Cefalotina sódica — 2025: mínimo de R$ 3,65, máximo de R$ 5,15, mediana de R$ 4,63 e amplitude de 41,1%;
+Cianocobalamina — 2021: mínimo de R$ 1,38, máximo de R$ 1,87, mediana de R$ 1,49 e amplitude de 35,5%.
+
+Essas diferenças indicam potenciais oportunidades de investigação e economia, pois compras de produtos comparáveis apresentaram preços diferentes.
+
+Entretanto, a dispersão observada não deve ser interpretada automaticamente como sobrepreço ou economia garantida. Diferenças de fornecedor, condições de contratação, apresentação, quantidade adquirida, localização e outros fatores podem influenciar o preço registrado.
 
 ### 7 — Recomendações fundamentadas nos dados
 
