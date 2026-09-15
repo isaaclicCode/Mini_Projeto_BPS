@@ -699,6 +699,8 @@ de dados históricos como instrumento de apoio à tomada de decisão e à busca 
 
 **🐙 Repositório:** [https://github.com/isaaclicCode/Mini_Projeto_BPS].
 
-** BigQuery (consultas SQL e historico de jobs): [https://console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1smini-projeto-bps-2020-a-2026!2smini_projeto_bps_saude]
+** ☁️ BigQuery (consultas SQL e historico de jobs): [https://console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1smini-projeto-bps-2020-a-2026!2smini_projeto_bps_saude]
 
 **📊 Dashboard Visuais:** [https://datastudio.google.com/s/om1LVw3-Zz0]
+
+** Vídeo explicativo do dashboard:*  [https://drive.google.com/file/d/1ZeFVr2MQlXeq7peo4icQfLloadt-r-eb/view?usp=sharing]
